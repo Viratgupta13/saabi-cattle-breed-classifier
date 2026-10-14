@@ -10,90 +10,110 @@
     --bg:#f7f4ec; --surface:#fffdf8; --ink:#1d2a22; --muted:#66736b; --line:#e4dfd0;
     --green:#2c6e49; --green-d:#1f5036; --green-soft:#e3efe7; --clay:#b5532e;
     --warn-bg:#fdf1d6; --warn-ink:#6b4e0a; --bad-bg:#fbe4df; --bad-ink:#7a2a16;
-    --radius:16px; --shadow:0 1px 2px rgba(30,40,30,.06), 0 8px 24px rgba(30,40,30,.06);
+    --radius:16px; --shadow:0 1px 2px rgba(30,40,30,.05), 0 6px 20px rgba(30,40,30,.05);
+    /* 8px spacing scale */
+    --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:48px; --s6:72px;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#121813; --surface:#1a221c; --ink:#e9eee9; --muted:#9aa89f; --line:#2b362e;
       --green:#6cc28f; --green-d:#8fd6ab; --green-soft:#1f3327; --clay:#e08a63;
       --warn-bg:#3a2f12; --warn-ink:#f2d58a; --bad-bg:#3d1f19; --bad-ink:#f3b4a3;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25); }
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25); }
   }
   *{box-sizing:border-box} html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
   a{color:inherit}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
-  h1,h2,h3{font-family:ui-serif,"Iowan Old Style",Georgia,serif;line-height:1.15;margin:0}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 var(--s3)}
+  h1,h2,h3{font-family:ui-serif,"Iowan Old Style",Georgia,serif;line-height:1.15;margin:0;font-weight:700}
+  [hidden]{display:none!important}
 
   /* nav */
   nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);
       backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .logo{font:700 20px ui-serif,Georgia,serif;text-decoration:none;letter-spacing:.5px}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{font:700 22px ui-serif,Georgia,serif;text-decoration:none;letter-spacing:.5px}
   .logo span{color:var(--green)}
-  nav ul{display:flex;gap:22px;list-style:none;margin:0;padding:0;font-size:14px}
+  nav ul{display:flex;gap:var(--s4);list-style:none;margin:0;padding:0;font-size:14px}
   nav ul a{text-decoration:none;color:var(--muted)} nav ul a:hover{color:var(--ink)}
   @media(max-width:640px){nav ul li:not(:last-child){display:none}}
 
-  /* hero */
-  .hero{padding:56px 20px 40px;display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:start}
-  @media(max-width:880px){.hero{grid-template-columns:1fr;padding-top:36px}}
+  /* hero: one centred column so everything shares the same axis */
+  .hero{padding:var(--s6) var(--s3) var(--s5);text-align:center}
   .eyebrow{display:inline-block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);
-           background:var(--green-soft);padding:4px 12px;border-radius:99px;font-weight:600}
-  .hero h1{font-size:clamp(34px,5.2vw,56px);margin:16px 0 14px}
+           background:var(--green-soft);padding:6px 14px;border-radius:99px;font-weight:600}
+  .hero h1{font-size:clamp(38px,6vw,62px);margin:var(--s3) auto var(--s2);max-width:14em;text-wrap:balance}
   .hero h1 em{font-style:normal;color:var(--clay)}
-  .lede{color:var(--muted);font-size:18px;max-width:34em;margin:0 0 26px}
-  .stats{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:8px}
-  .stat b{display:block;font:700 30px ui-serif,Georgia,serif;color:var(--green)}
-  .stat span{font-size:13px;color:var(--muted)}
+  .lede{color:var(--muted);font-size:18px;max-width:34em;margin:0 auto var(--s4);text-wrap:balance}
 
-  /* tool card */
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-  #drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;
-        min-height:230px;border:2px dashed var(--line);border-radius:12px;padding:24px;cursor:pointer;color:var(--muted);
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);max-width:560px;margin:0 auto;
+         background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .stat{padding:var(--s2) var(--s2)} .stat + .stat{border-left:1px solid var(--line)}
+  .stat b{display:block;font:700 30px ui-serif,Georgia,serif;color:var(--green);line-height:1.2}
+  .stat span{font-size:13px;color:var(--muted)}
+  .fine{font-size:13px;color:var(--muted);margin:var(--s2) 0 0}
+
+  /* tool */
+  .tool{max-width:760px;margin:var(--s5) auto 0;scroll-margin-top:88px;text-align:left}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--s3)}
+  #drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s1);text-align:center;
+        min-height:240px;border:2px dashed var(--line);border-radius:12px;padding:var(--s4);cursor:pointer;color:var(--muted);
         transition:border-color .15s,background .15s}
   #drop:hover,#drop.over,#drop:focus-visible{border-color:var(--green);background:var(--green-soft);outline:none}
   #drop svg{width:44px;height:44px;color:var(--green)}
-  #drop strong{color:var(--ink);font-size:17px} #drop small{font-size:13px}
-  .btn{appearance:none;border:0;background:var(--green);color:#fff;font:600 14px system-ui;padding:10px 18px;border-radius:10px;cursor:pointer}
+  #drop strong{color:var(--ink);font-size:18px} #drop small{font-size:13px}
+  .btn{appearance:none;border:0;background:var(--green);color:#fff;font:600 14px system-ui;padding:12px 20px;border-radius:10px;cursor:pointer}
   .btn.ghost{background:transparent;color:var(--green);border:1px solid var(--line)}
-  [hidden]{display:none!important}
-  .previewbox{position:relative;border-radius:12px;overflow:hidden;background:#0001;margin-bottom:14px}
-  #preview{display:block;width:100%;max-height:300px;object-fit:contain}
+  .btn.ghost:hover{border-color:var(--green)}
+
+  /* result: photo on the left, verdict on the right */
+  #result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3);align-items:stretch}
+  .previewbox{position:relative;border-radius:12px;overflow:hidden;min-height:280px;
+              background:color-mix(in srgb,var(--ink) 6%,transparent)}
+  @media(max-width:720px){ #result{grid-template-columns:minmax(0,1fr)} .previewbox{width:100%;aspect-ratio:4/3;min-height:0}}
+  #preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .scan{position:absolute;inset:0;display:none;background:linear-gradient(transparent 40%,color-mix(in srgb,var(--green) 40%,transparent) 50%,transparent 60%);
         background-size:100% 300%;animation:scan 1.2s linear infinite}
   .loading .scan{display:block} @keyframes scan{from{background-position:0 100%}to{background-position:0 -100%}}
-  .banner{padding:10px 14px;border-radius:10px;font-size:14px;margin-bottom:12px}
+  .side{display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+  .banner{padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5}
   .banner.warn{background:var(--warn-bg);color:var(--warn-ink)} .banner.bad{background:var(--bad-bg);color:var(--bad-ink)}
-  .top1{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .top1{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2)}
   .top1 h3{font-size:28px} .top1 .pct{font:700 24px ui-serif,Georgia,serif;color:var(--green)}
-  .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 12px}
+  .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
   .bar i{display:block;height:100%;background:var(--green);border-radius:4px;width:0;transition:width .6s cubic-bezier(.2,.8,.2,1)}
-  .alt{display:flex;justify-content:space-between;font-size:14px;color:var(--muted)}
-  .bar.alt{height:5px;display:block}
-  .tags{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 6px}
-  .tag{font-size:12px;border:1px solid var(--line);padding:2px 10px;border-radius:99px;color:var(--muted)}
-  .note{font-size:14px;color:var(--muted);margin:6px 0 14px}
-  .actions{display:flex;gap:10px;margin-top:6px}
-  .hint{font-size:12px;color:var(--muted);text-align:center;margin:10px 0 0}
+  .bar.alt{height:5px}
+  .alts{display:flex;flex-direction:column;gap:var(--s2)}
+  .alt{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+  .alt .row{display:flex;justify-content:space-between}
+  .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-size:12px;border:1px solid var(--line);padding:3px 10px;border-radius:99px;color:var(--muted)}
+  .note{font-size:14px;color:var(--muted);margin:0}
+  .spacer{flex:1}
+  .hint{font-size:12px;color:var(--muted);text-align:center;margin:var(--s2) 0 0}
 
-  /* sections */
-  section{padding:56px 20px} section h2{font-size:clamp(26px,3.4vw,36px);margin-bottom:10px}
-  .sub{color:var(--muted);max-width:40em;margin:0 0 28px}
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .step{padding:22px} .step .n{font:700 14px ui-serif,Georgia,serif;color:var(--clay);letter-spacing:.1em}
-  .step h3{font-size:20px;margin:8px 0}.step p{margin:0;color:var(--muted);font-size:15px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:14px}
-  .breed{padding:18px} .breed h3{font-size:20px;margin:10px 0 0}
-  .breed p{font-size:14px;color:var(--muted);margin:8px 0 0}
-  .pill{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:99px;
+  /* sections: same vertical rhythm, centred headings */
+  section.wrap{margin-top:var(--s6)}
+  .head{text-align:center;margin-bottom:var(--s4)}
+  .head h2{font-size:clamp(28px,3.6vw,38px)}
+  .head p{color:var(--muted);max-width:38em;margin:var(--s1) auto 0}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3)}
+  .step .n{font:700 14px ui-serif,Georgia,serif;color:var(--clay);letter-spacing:.1em}
+  .step h3{font-size:22px;margin:var(--s1) 0}.step p{margin:0;color:var(--muted);font-size:15px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2)}
+  .breed{display:flex;flex-direction:column;gap:var(--s1);padding:var(--s3)}
+  .breed h3{font-size:20px} .breed p{font-size:14px;color:var(--muted);margin:0}
+  .breed .tags{margin:var(--s1) 0}
+  .pill{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;
         background:var(--green-soft);color:var(--green-d)} .pill.buffalo{background:#f3e0d8;color:#8a3a1a}
   @media(prefers-color-scheme:dark){.pill.buffalo{background:#3d2519;color:#f0b196} .btn{color:#0f1a13}}
-  .limits{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:760px){.steps,.limits{grid-template-columns:1fr}}
-  .limits .card{padding:22px} .limits h3{font-size:20px;margin-bottom:8px}
-  .limits ul{margin:0;padding-left:18px;color:var(--muted);font-size:15px}
-  footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:14px}
-  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  @media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:720px){.steps,.limits{grid-template-columns:1fr!important}}
+  @media(max-width:520px){.grid{grid-template-columns:1fr}.stat{padding:var(--s2) var(--s1)}.stat b{font-size:24px}.stat span{font-size:12px}}
+  .limits{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+  .limits h3{font-size:20px;margin-bottom:var(--s2)}
+  .limits ul{margin:0;padding-left:20px;color:var(--muted);font-size:15px;display:flex;flex-direction:column;gap:var(--s1)}
+  footer{margin-top:var(--s6);border-top:1px solid var(--line);padding:var(--s4) 0 var(--s5);color:var(--muted);font-size:14px;text-align:center}
+  footer p{margin:0 0 4px}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -108,42 +128,46 @@
 </div></nav>
 
 <main id="top">
-<div class="wrap hero">
-  <div>
-    <span class="eyebrow">Computer vision · Transfer learning</span>
-    <h1>Know the breed <em>at a glance.</em></h1>
-    <p class="lede">Upload a photo of an Indian or exotic cattle or buffalo and SAABI names the breed, with a calibrated
-      confidence and a flag when it isn't sure or the photo isn't a supported breed.</p>
-    <div class="stats">
-      <div class="stat"><b>{{ breeds|length }}</b><span>breeds recognised</span></div>
-      {% if metrics %}
-      <div class="stat"><b>{{ '%.1f'|format(metrics.accuracy*100) }}%</b><span>test accuracy</span></div>
-      <div class="stat"><b>{{ '%.1f'|format(metrics.top3*100) }}%</b><span>top-3 accuracy</span></div>
-      {% endif %}
-    </div>
-    {% if metrics %}<p class="hint" style="text-align:left">Measured on {{ metrics.test_images }} held-out images the model never saw.</p>{% endif %}
+<div class="hero wrap">
+  <span class="eyebrow">Computer vision · Transfer learning</span>
+  <h1>Know the breed <em>at a glance.</em></h1>
+  <p class="lede">Upload a photo of an Indian or exotic cattle or buffalo and SAABI names the breed, with a calibrated
+    confidence and a flag when it isn't sure or the photo isn't a supported breed.</p>
+
+  <div class="stats">
+    <div class="stat"><b>{{ breeds|length }}</b><span>breeds</span></div>
+    {% if metrics %}
+    <div class="stat"><b>{{ '%.1f'|format(metrics.accuracy*100) }}%</b><span>test accuracy</span></div>
+    <div class="stat"><b>{{ '%.1f'|format(metrics.top3*100) }}%</b><span>top-3 accuracy</span></div>
+    {% endif %}
   </div>
+  {% if metrics %}<p class="fine">Measured on {{ metrics.test_images }} held-out images the model never saw.</p>{% endif %}
 
-  <div id="try" class="card" style="scroll-margin-top:80px">
-    <label id="drop" for="file" tabindex="0">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/><path d="M12 4v11"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/></svg>
-      <strong>Drop a photo, or click to choose</strong>
-      <small>You can also paste from the clipboard · JPG, PNG, BMP · up to 10 MB</small>
-    </label>
-    <input id="file" type="file" accept="image/jpeg,image/png,image/bmp" hidden>
+  <div id="try" class="tool">
+    <div class="card">
+      <label id="drop" for="file" tabindex="0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/><path d="M12 4v11"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/></svg>
+        <strong>Drop a photo, or click to choose</strong>
+        <small>You can also paste from the clipboard · JPG, PNG, BMP · up to 10 MB</small>
+      </label>
+      <input id="file" type="file" accept="image/jpeg,image/png,image/bmp" hidden>
 
-    <div id="result" hidden aria-live="polite">
-      <div class="previewbox"><img id="preview" alt="Your uploaded photo"><div class="scan"></div></div>
-      <div id="details"></div>
-      <div class="actions"><button class="btn ghost" id="again" type="button">Try another photo</button></div>
+      <div id="result" hidden aria-live="polite">
+        <div class="previewbox"><img id="preview" alt="Your uploaded photo"><div class="scan"></div></div>
+        <div class="side">
+          <div id="details"></div>
+          <div class="spacer"></div>
+          <button class="btn ghost" id="again" type="button">Try another photo</button>
+        </div>
+      </div>
     </div>
     <p class="hint">Best results: one animal, side-on, well lit. Photos are processed on this server and not stored.</p>
   </div>
 </div>
 
 <section id="how" class="wrap">
-  <h2>How it works</h2>
-  <p class="sub">A pretrained image network, adapted to Indian breeds, with checks that tell you when to doubt it.</p>
+  <div class="head"><h2>How it works</h2>
+    <p>A pretrained image network, adapted to Indian breeds, with checks that tell you when to doubt it.</p></div>
   <div class="steps">
     <div class="card step"><span class="n">01</span><h3>See</h3><p>The photo is resized and passed through MobileNetV2, a compact network pretrained on ImageNet and fine-tuned on labelled breed photos.</p></div>
     <div class="card step"><span class="n">02</span><h3>Decide</h3><p>A softmax layer scores each breed. Temperature scaling calibrates these scores so “80%” is closer to meaning 80%.</p></div>
@@ -152,8 +176,8 @@
 </section>
 
 <section id="breeds" class="wrap">
-  <h2>Supported breeds</h2>
-  <p class="sub">Four dairy cattle breeds, three draught breeds, and one dairy buffalo.</p>
+  <div class="head"><h2>Supported breeds</h2>
+    <p>Four dairy cattle breeds, three draught breeds, and one dairy buffalo.</p></div>
   <div class="grid">
     {% for b in breeds %}
     <div class="card breed">
@@ -167,8 +191,8 @@
 </section>
 
 <section id="limits" class="wrap">
-  <h2>Honest about its limits</h2>
-  <p class="sub">A good model is one that tells you where it struggles.</p>
+  <div class="head"><h2>Honest about its limits</h2>
+    <p>A good model is one that tells you where it struggles.</p></div>
   <div class="limits">
     <div class="card"><h3>Where it struggles</h3><ul>
       <li>Gir and Sahiwal look alike and are the most commonly confused pair.</li>
@@ -185,8 +209,8 @@
 </main>
 
 <footer><div class="wrap">
-  <span>SAABI · Cattle &amp; buffalo breed identification</span>
-  <span>For education and demonstration, not a substitute for expert breed certification.</span>
+  <p>SAABI · Cattle &amp; buffalo breed identification</p>
+  <p>For education and demonstration, not a substitute for expert breed certification.</p>
 </div></footer>
 
 <script>
@@ -216,20 +240,20 @@ async function classify(f) {
 
 function render(d) {
   const [top, ...rest] = d.predictions;
-  let html = '';
+  let html = '<div class="side" style="gap:16px">';
   if (d.status === 'unsupported') {
-    html += `<div class="banner bad"><b>This doesn’t look like one of the 8 supported breeds.</b> It may not be cattle at all. The closest match is shown below, but don’t rely on it.</div>`;
+    html += `<div class="banner bad"><b>Not one of the 8 supported breeds.</b> It may not be cattle at all; the closest match is shown, but don’t rely on it.</div>`;
   } else if (d.status === 'uncertain') {
     html += `<div class="banner warn"><b>Not sure about this one.</b> Try a clearer, side-on photo of a single animal.</div>`;
   }
-  html += `<div class="top1"><h3>${pretty(top.breed)}</h3><span class="pct">${pct(top.confidence)}%</span></div>
-           <div class="bar"><i data-w="${pct(top.confidence)}"></i></div>`;
+  html += `<div><div class="top1"><h3>${pretty(top.breed)}</h3><span class="pct">${pct(top.confidence)}%</span></div>
+           <div class="bar" style="margin-top:8px"><i data-w="${pct(top.confidence)}"></i></div></div>`;
   if (d.info && d.status === 'ok') {
     html += `<div class="tags"><span class="tag">${esc(d.info.species)}</span><span class="tag">${esc(d.info.origin)}</span><span class="tag">${esc(d.info.use)}</span></div>
              <p class="note">${esc(d.info.note)}</p>`;
   }
-  html += rest.map(p => `<div class="alt"><span>${pretty(p.breed)}</span><span>${pct(p.confidence)}%</span></div>
-           <div class="bar alt"><i data-w="${pct(p.confidence)}"></i></div>`).join('');
+  html += '<div class="alts">' + rest.map(p => `<div class="alt"><div class="row"><span>${pretty(p.breed)}</span><span>${pct(p.confidence)}%</span></div>
+           <div class="bar alt"><i data-w="${pct(p.confidence)}"></i></div></div>`).join('') + '</div></div>';
   details.innerHTML = html;
   requestAnimationFrame(() => details.querySelectorAll('.bar i').forEach(i => i.style.width = i.dataset.w + '%'));
 }

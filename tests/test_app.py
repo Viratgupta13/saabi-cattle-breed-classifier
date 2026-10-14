@@ -67,3 +67,9 @@ def test_predict_rejects_wrong_extension(client):
 def test_predict_rejects_corrupt_image(client):
     r = client.post("/api/predict", data={"image": (io.BytesIO(b"not an image"), "a.jpg")})
     assert r.status_code == 400
+
+
+def test_template_has_no_jinja_comment_collisions():
+    """A stray '{#' in CSS (e.g. '{#result{...}') is parsed by Jinja as a comment and breaks the page."""
+    from pathlib import Path
+    assert "{#" not in (Path(__file__).resolve().parent.parent / "templates" / "index.html").read_text()
