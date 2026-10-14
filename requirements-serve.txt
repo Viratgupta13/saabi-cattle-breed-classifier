@@ -1,0 +1,8 @@
+# Minimal runtime for the Docker image (CPU inference only)
+tensorflow-cpu==2.16.2
+numpy<2
+pillow
+scipy
+scikit-learn
+flask>=3
+gunicorn

@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
+# raw dataset is not redistributed; see README
+data/
+legacy/
+test_images/

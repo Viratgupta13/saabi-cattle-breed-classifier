@@ -1,0 +1,11 @@
+# Full development environment (train, evaluate, serve, test)
+tensorflow>=2.16,<2.17; sys_platform != "darwin"
+tensorflow-macos>=2.16,<2.17; sys_platform == "darwin"
+numpy<2
+pillow
+scipy
+scikit-learn
+matplotlib
+flask>=3
+gunicorn
+pytest

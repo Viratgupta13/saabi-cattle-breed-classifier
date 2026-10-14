@@ -1,0 +1,11 @@
+venv/
+data/
+legacy/
+tests/
+test_images/
+assets/
+.git/
+.github/
+__pycache__/
+.pytest_cache/
+*.md

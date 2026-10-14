@@ -1,0 +1,14 @@
+{
+  "temperature": 1.0762136873352766,
+  "threshold": 0.6347335577011108,
+  "ood_threshold": 0.6873247802257538,
+  "test": {
+    "in_distribution_accepted": 0.9276315789473685,
+    "ece_before": 0.05202424859530046,
+    "ece_after": 0.039168108842874805,
+    "nll_before": 0.4863416850566864,
+    "nll_after": 0.4799852967262268,
+    "coverage": 0.8618421052631579,
+    "accuracy_on_accepted": 0.8854961832061069
+  }
+}
