@@ -10,6 +10,10 @@ transfer learning on MobileNetV2, served through a Flask web UI and a JSON API.
 
 **[▶ Live demo](https://saabi-qhel.onrender.com/)** (free tier: the first load after idle can take ~30-60 s to wake up)
 
+![SAABI demo: uploading cattle photos and getting breed predictions](assets/demo.gif)
+
+*Demo: a buffalo and two cattle breeds identified correctly, then a non-cattle photo flagged as unsupported.*
+
 | Confusion matrix (test set) | Training curves |
 |---|---|
 | ![confusion matrix](assets/confusion_matrix.png) | ![training curves](assets/training_curves.png) |
