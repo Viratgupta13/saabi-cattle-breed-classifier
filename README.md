@@ -8,7 +8,7 @@ transfer learning on MobileNetV2, served through a Flask web UI and a JSON API.
 > **Test accuracy: 83.6 %** (top-3: **96.1 %**, macro-F1: **0.84**) on 152 images held out from training and model selection.
 > Also flags uncertain predictions and photos that aren't a supported breed (see *Knowing when it doesn't know*).
 
-<!-- Live demo: add your deployed URL here once deployed (see DEPLOY.md) -->
+**[▶ Live demo](https://saabi-qhel.onrender.com/)** (free tier: the first load after idle can take ~30-60 s to wake up)
 
 | Confusion matrix (test set) | Training curves |
 |---|---|
