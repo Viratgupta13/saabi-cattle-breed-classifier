@@ -1,5 +1,7 @@
 # 🐄 SAABI: Indian Cattle & Buffalo Breed Classifier
 
+[![CI](https://github.com/Viratgupta13/saabi-cattle-breed-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Viratgupta13/saabi-cattle-breed-classifier/actions/workflows/ci.yml)
+
 Upload a photo, get the breed. SAABI identifies **8 Indian and exotic cattle/buffalo breeds** using
 transfer learning on MobileNetV2, served through a Flask web UI and a JSON API.
 
