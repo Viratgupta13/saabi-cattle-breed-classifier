@@ -28,9 +28,9 @@ jobs:
         run: docker build -t saabi .
       - name: Smoke-test the container
         run: |
-          docker run -d --name saabi -p 7860:7860 saabi
+          docker run -d --name saabi -p 10000:10000 saabi
           for i in $(seq 1 30); do
-            curl -sf http://127.0.0.1:7860/api/health && exit 0
+            curl -sf http://127.0.0.1:10000/api/health && exit 0
             sleep 3
           done
           docker logs saabi

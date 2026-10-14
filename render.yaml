@@ -1,0 +1,10 @@
+# Render blueprint: New + > Blueprint > pick this repo. Free plan, no card needed.
+services:
+  - type: web
+    name: saabi
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: GITHUB_URL
+        value: https://github.com/Viratgupta13/saabi-cattle-breed-classifier

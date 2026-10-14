@@ -18,3 +18,4 @@ CALIBRATION_PATH = MODEL_DIR / "calibration.json"
 TARGET_SELECTIVE_ACCURACY = 0.92  # accuracy we want on the predictions we choose to answer
 OOD_PATH = MODEL_DIR / "ood_centroids.npy"
 OOD_ACCEPT_FRACTION = 0.95  # keep 95% of in-distribution validation images
+TFLITE_PATH = MODEL_DIR / "saabi.tflite"

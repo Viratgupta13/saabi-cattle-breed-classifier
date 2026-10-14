@@ -1,8 +1,6 @@
-# Minimal runtime for the Docker image (CPU inference only)
-tensorflow-cpu==2.16.2
+# Minimal runtime for the Docker image: no TensorFlow needed (TFLite inference)
+ai-edge-litert
 numpy<2
 pillow
-scipy
-scikit-learn
 flask>=3
 gunicorn

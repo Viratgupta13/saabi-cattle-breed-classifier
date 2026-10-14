@@ -1,28 +1,46 @@
-"""Inference wrapper and CLI.
+"""Inference wrapper and CLI. Runs on the TFLite model, so TensorFlow is not needed.
 
     python -m saabi.predict photo1.jpg photo2.jpg
 """
 import json
 import sys
+import threading
 
 import numpy as np
-import tensorflow as tf
 from PIL import Image, ImageOps
 
-from . import config, data
-from .calibrate import cosine_to_centroids, feature_extractor, softmax_t
+from . import config
+from .scoring import cosine_to_centroids, softmax_t
+
+try:
+    from ai_edge_litert.interpreter import Interpreter
+except ImportError:  # dev machines that only have full TensorFlow
+    from tensorflow.lite import Interpreter
 
 
 class Classifier:
-    def __init__(self, model_path=config.MODEL_PATH):
-        self.model = tf.keras.models.load_model(model_path)
-        self.extractor = feature_extractor(self.model)
-        self.class_names = data.load_class_names()
+    def __init__(self, model_path=config.TFLITE_PATH):
+        self.interpreter = Interpreter(model_path=str(model_path))
+        self.interpreter.allocate_tensors()
+        self._input = self.interpreter.get_input_details()[0]["index"]
+        self._outputs = self.interpreter.get_output_details()
+        self._lock = threading.Lock()  # a TFLite interpreter is not thread-safe
+
+        self.class_names = json.loads(config.CLASSES_PATH.read_text())
         cal = json.loads(config.CALIBRATION_PATH.read_text()) if config.CALIBRATION_PATH.exists() else {}
         self.temperature = cal.get("temperature", 1.0)
         self.threshold = cal.get("threshold", 0.0)
         self.ood_threshold = cal.get("ood_threshold", -1.0)
         self.centroids = np.load(config.OOD_PATH) if config.OOD_PATH.exists() else None
+
+    def _run(self, batch: np.ndarray):
+        """Return (features, probabilities); the two outputs are told apart by width."""
+        with self._lock:
+            self.interpreter.set_tensor(self._input, batch)
+            self.interpreter.invoke()
+            outs = {o["shape"][-1]: self.interpreter.get_tensor(o["index"]).copy() for o in self._outputs}
+        n = len(self.class_names)
+        return next(v for k, v in outs.items() if k != n), outs[n]
 
     def predict(self, img: Image.Image, top_k: int = 3):
         """Return {'predictions': [{'breed','confidence'}], 'status': ...}.
@@ -34,15 +52,14 @@ class Classifier:
         """
         img = ImageOps.exif_transpose(img).convert("RGB")
         img = img.resize((config.IMG_SIZE, config.IMG_SIZE))
-        batch = np.asarray(img, dtype="float32")[None]
-        feats, raw = self.extractor(batch, training=False)
-        probs = softmax_t(raw.numpy(), self.temperature)[0]
+        feats, raw = self._run(np.asarray(img, dtype="float32")[None])
+        probs = softmax_t(raw, self.temperature)[0]
         order = np.argsort(probs)[::-1][:top_k]
         top = [{"breed": self.class_names[i], "confidence": float(probs[i])} for i in order]
 
         status = "ok"
         if self.centroids is not None and \
-                cosine_to_centroids(feats.numpy(), self.centroids)[0] < self.ood_threshold:
+                cosine_to_centroids(feats, self.centroids)[0] < self.ood_threshold:
             status = "unsupported"
         elif top[0]["confidence"] < self.threshold:
             status = "uncertain"

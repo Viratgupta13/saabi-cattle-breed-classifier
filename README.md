@@ -62,6 +62,19 @@ hard look-alikes (other animals, other cattle breeds), so treat it as a sanity c
 The first attempt, a max-softmax threshold alone, accepted a temple photo as "Gir" at 83 % confidence, which is why the
 feature-space check exists.
 
+## Deployment efficiency (TFLite)
+
+The trained Keras model is exported to TFLite (`python -m saabi.export`) and the web server runs on that, without TensorFlow:
+
+| | Keras / TensorFlow | TFLite |
+|---|---|---|
+| Model size | 23.1 MB | **8.9 MB** |
+| Server RAM (peak) | ~628 MB | **~75 MB** |
+| Latency per image (CPU) | 43 ms | **11 ms** |
+| Test accuracy | 83.55 % | 83.55 % (100 % prediction agreement, max probability diff 3.6e-6) |
+
+Measured on an Apple-silicon laptop CPU, single image, after warm-up. The smaller footprint is what lets the demo run on a free 512 MB host.
+
 ## Engineering notes
 
 - **Found and fixed a train/serve skew bug.** The original scripts trained on OpenCV (BGR) images, but the web
@@ -100,24 +113,25 @@ Put images in `data/<BreedName>/*.jpg`, then:
 python -m saabi.train
 python -m saabi.evaluate   # writes models/metrics.json + assets/confusion_matrix.png
 python -m saabi.calibrate  # fits temperature + rejection thresholds (re-run after every retrain)
+python -m saabi.export     # exports the TFLite model used by the server and checks parity
 ```
 
 ### Docker
 
 ```bash
-docker build -t saabi . && docker run -p 7860:7860 saabi
+docker build -t saabi . && docker run -p 10000:10000 saabi   # http://localhost:10000
 ```
 
-CI (`.github/workflows/ci.yml`) runs the tests and builds and smoke-tests the image on every push. See `DEPLOY.md` for hosting.
+CI (`.github/workflows/ci.yml`) runs the tests and builds and smoke-tests the image on every push. See `DEPLOY.md` for free hosting on Render.
 
 ## Project layout
 
 ```
-saabi/            config, data pipeline, model, train, evaluate, calibrate, predict
+saabi/            config, data pipeline, model, train, evaluate, calibrate, export, scoring, predict
 app.py            Flask app factory + /api/predict
 templates/        web UI
 tests/            data-split and API tests
-models/           trained model, class names, metrics
+models/           Keras + TFLite models, class names, calibration, metrics
 ```
 
 ## Limitations & next steps
@@ -125,7 +139,7 @@ models/           trained model, class names, metrics
 - ~1,000 images total; per-class test sets are small (12–23 images), so per-class numbers have wide error bars.
 - Gir vs. Sahiwal needs more and more varied data (or a higher-resolution / fine-grained model).
 - Rejection of non-cattle images was validated on a proxy set only (see above); other animals and unseen breeds are untested.
-- Next: Grad-CAM explanations, a stronger backbone with an ablation table, more Gir/Sahiwal data, TFLite export.
+- Next: Grad-CAM explanations, a stronger backbone with an ablation table, more Gir/Sahiwal data, Quantisation.
 
 ## Dataset
 

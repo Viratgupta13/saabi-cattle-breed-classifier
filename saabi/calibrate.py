@@ -11,15 +11,7 @@ import tensorflow as tf
 from scipy.optimize import minimize_scalar
 
 from . import config, data
-
-
-def softmax_t(probs: np.ndarray, temperature: float) -> np.ndarray:
-    """Re-temper softmax outputs. log(p) equals the logits up to a per-row constant,
-    which softmax ignores, so this is exactly softmax(logits / T)."""
-    z = np.log(np.clip(probs, 1e-12, 1)) / temperature
-    z -= z.max(axis=-1, keepdims=True)
-    e = np.exp(z)
-    return e / e.sum(axis=-1, keepdims=True)
+from .scoring import cosine_to_centroids, softmax_t  # noqa: F401  (re-exported)
 
 
 def nll(probs, labels):
@@ -67,13 +59,6 @@ def feature_extractor(model: tf.keras.Model) -> tf.keras.Model:
     """Model returning (pooled backbone features, class probabilities)."""
     gap = next(l for l in model.layers if isinstance(l, tf.keras.layers.GlobalAveragePooling2D))
     return tf.keras.Model(model.input, [gap.output, model.output])
-
-
-def cosine_to_centroids(features: np.ndarray, centroids: np.ndarray) -> np.ndarray:
-    """Highest cosine similarity to any breed centroid; low means 'unlike every known breed'."""
-    a = features / np.linalg.norm(features, axis=1, keepdims=True)
-    b = centroids / np.linalg.norm(centroids, axis=1, keepdims=True)
-    return (a @ b.T).max(axis=1)
 
 
 def main():
