@@ -211,6 +211,7 @@
 <footer><div class="wrap">
   <p>SAABI · Cattle &amp; buffalo breed identification</p>
   <p>For education and demonstration, not a substitute for expert breed certification.</p>
+  <p>© <span id="y"></span> Virat Gupta. All rights reserved.</p>
 </div></footer>
 
 <script>
@@ -268,6 +269,7 @@ document.addEventListener('paste', e => {
   const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith('image/'));
   if (item) classify(item.getAsFile());
 });
+document.getElementById('y').textContent = new Date().getFullYear();
 </script>
 </body>
 </html>

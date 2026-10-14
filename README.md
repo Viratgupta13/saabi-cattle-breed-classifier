@@ -22,6 +22,16 @@ transfer learning on MobileNetV2, served through a Flask web UI and a JSON API.
 
 Alambadi · Amritmahal · Dangi · Gir · Holstein Friesian · Jersey · Murrah · Sahiwal
 
+## Tech stack
+
+| Area | Tools |
+|---|---|
+| Model | TensorFlow / Keras, MobileNetV2 (ImageNet), scikit-learn, NumPy |
+| Inference | TFLite (`ai-edge-litert`), Pillow |
+| Serving | Flask, gunicorn |
+| DevOps | Docker, GitHub Actions CI, Render |
+| Testing | pytest |
+
 ## How it works
 
 ```
@@ -148,3 +158,7 @@ models/           Keras + TFLite models, class names, calibration, metrics
 ## Dataset
 
 TODO: state the image source(s) and licence here. The raw dataset is not redistributed in this repo.
+
+---
+
+© 2026 Virat Gupta. **All rights reserved.** Code is public for viewing only; reuse needs written permission.
