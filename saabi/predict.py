@@ -12,10 +12,7 @@ from PIL import Image, ImageOps
 from . import config
 from .scoring import cosine_to_centroids, softmax_t
 
-try:
-    from ai_edge_litert.interpreter import Interpreter
-except ImportError:  # dev machines that only have full TensorFlow
-    from tensorflow.lite import Interpreter
+from ai_edge_litert.interpreter import Interpreter
 
 
 class Classifier:

@@ -7,5 +7,6 @@ scipy
 scikit-learn
 matplotlib
 flask>=3
+ai-edge-litert
 gunicorn
 pytest
