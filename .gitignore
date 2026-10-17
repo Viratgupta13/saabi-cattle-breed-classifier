@@ -2,6 +2,7 @@ venv/
 __pycache__/
 .pytest_cache/
 .DS_Store
+.claude/
 # raw dataset is not redistributed; see README
 data/
 legacy/
