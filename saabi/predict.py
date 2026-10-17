@@ -45,7 +45,7 @@ class Classifier:
         Confidences are temperature-calibrated. status is one of:
           'ok'           confident, looks like a supported breed
           'uncertain'    looks like cattle but confidence is below the validation threshold
-          'unsupported'  features are far from every known breed (probably not one of the 8)
+          'unsupported'  features are far from every known breed (probably not one of the 38)
         """
         img = ImageOps.exif_transpose(img).convert("RGB")
         img = img.resize((config.IMG_SIZE, config.IMG_SIZE))
@@ -60,7 +60,8 @@ class Classifier:
             status = "unsupported"
         elif top[0]["confidence"] < self.threshold:
             status = "uncertain"
-        return {"predictions": top, "status": status}
+        return {"predictions": top, "status": status,
+                "model_version": config.MODEL_VERSION}
 
 
 def main(argv):

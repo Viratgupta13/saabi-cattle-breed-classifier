@@ -2,10 +2,10 @@
 
 [![CI](https://github.com/Viratgupta13/saabi-cattle-breed-classifier/actions/workflows/ci.yml/badge.svg)](https://github.com/Viratgupta13/saabi-cattle-breed-classifier/actions/workflows/ci.yml)
 
-Upload a photo, get the breed. SAABI identifies **8 Indian and exotic cattle/buffalo breeds** using
-transfer learning on MobileNetV2, served through a Flask web UI and a JSON API.
+Upload a photo, get the breed. SAABI identifies **38 cattle and buffalo breeds** — Indian indigenous, exotic
+dairy and river buffalo — using transfer learning on MobileNetV2, served through a Flask web UI and a JSON API.
 
-> **Test accuracy: 83.6 %** (top-3: **96.1 %**, macro-F1: **0.84**) on 152 images held out from training and model selection.
+> **Test accuracy: 79.9 %** (top-3: **92.7 %**, macro-F1: **0.60**) on 2,636 images held out from training and model selection.
 > Also flags uncertain predictions and photos that aren't a supported breed (see *Knowing when it doesn't know*).
 
 **[▶ Live demo](https://saabi-qhel.onrender.com/)** (free tier: the first load after idle can take ~30-60 s to wake up)
@@ -18,9 +18,13 @@ transfer learning on MobileNetV2, served through a Flask web UI and a JSON API.
 |---|---|
 | ![confusion matrix](assets/confusion_matrix.png) | ![training curves](assets/training_curves.png) |
 
-## Breeds
+## Breeds (38)
 
-Alambadi · Amritmahal · Dangi · Gir · Holstein Friesian · Jersey · Murrah · Sahiwal
+Alambadi · Amritmahal · Ayrshire · Banni · Bargur · Bhadawari · Brown Swiss · Dangi · Deoni · Gir ·
+Guernsey · Hallikar · Hariana · Holstein Friesian · Jaffarabadi · Jersey · Kangayam · Kankrej ·
+Kasaragod · Khillari · Krishna Valley · Malnad Gidda · Mehsana · Murrah · Nagori · Nagpuri · Nili Ravi ·
+Nimari · Ongole · Pulikulam · Rathi · Red Dane · Red Sindhi · Sahiwal · Tharparkar · Toda ·
+Umblachery · Vechur
 
 ## Tech stack
 
@@ -35,39 +39,42 @@ Alambadi · Amritmahal · Dangi · Gir · Holstein Friesian · Jersey · Murrah 
 ## How it works
 
 ```
-photo ─► augment (train only) ─► scale to [-1,1] ─► MobileNetV2 (ImageNet) ─► GAP ─► Dropout ─► Softmax(8)
+photo ─► augment (train only) ─► scale to [-1,1] ─► MobileNetV2 (ImageNet) ─► GAP ─► Dropout ─► Softmax(38)
 ```
 
 - **Two-phase transfer learning:** train the classifier head with the backbone frozen, then fine-tune the top 40
   backbone layers at a low learning rate (BatchNorm kept frozen).
+- **Mixup augmentation** during fine-tuning (α = 0.2): blends random image pairs and their labels to improve
+  generalisation and calibration.
 - **Preprocessing lives inside the model.** It takes raw RGB pixels, so training, evaluation and serving share a
   single code path and cannot drift apart (see *Engineering notes*).
-- **Imbalance handling:** inverse-frequency class weights (Dangi has 82 images vs. 150 for the largest class).
-- **Leak-free evaluation:** exact-duplicate images are removed before a stratified 70/15/15 train/val/test split.
+- **Imbalance handling:** inverse-frequency class weights during head training.
+- **Data pipeline:** breed-name normalisation, MD5 deduplication, corrupt-image filtering, stratified 70/15/15 split.
   Validation drives early stopping and LR scheduling; the test set is touched only by `saabi.evaluate`.
 
 ## Results
 
-| Metric (test, n=152) | Value |
+| Metric (test, n=2,636) | Value |
 |---|---|
-| Top-1 accuracy | 83.6 % |
-| Top-3 accuracy | 96.1 % |
-| Macro F1 | 0.84 |
+| Top-1 accuracy | 79.9 % |
+| Top-3 accuracy | 92.7 % |
+| Macro F1 | 0.60 |
 
-Strongest: Murrah (F1 0.96), Holstein Friesian (0.94), Alambadi (0.93).
-Weakest: **Gir ↔ Sahiwal**: two visually similar zebu breeds, responsible for 12 of the 25 test errors.
+Strongest: Tharparkar (F1 0.92), Vechur (0.92), Sahiwal (0.89), Rathi (0.89), Brown Swiss & Holstein Friesian (0.86).
+Weakest: **Krishna Valley** (0.00 — confused with other large white breeds), **Bhadawari** (0.13), **Mehsana** (0.24).
+Some visually similar pairs remain challenging: Gir ↔ Sahiwal, Hallikar ↔ Kangayam, Murrah ↔ Nagpuri.
 Full per-class numbers are in `models/metrics.json`.
 
 ## Knowing when it doesn't know
 
-A classifier that must pick one of 8 breeds will confidently mislabel a dog, a tractor or a landscape. SAABI adds two guards,
+A classifier that must pick one of 38 breeds will confidently mislabel a dog, a tractor or a landscape. SAABI adds two guards,
 both fitted on the **validation split only**:
 
 | Guard | Method | Result |
 |---|---|---|
-| **Calibration** | Temperature scaling of the softmax (T = 1.08) | Expected calibration error on test: **5.2 % → 3.9 %** |
-| **Uncertain flag** | Reject when calibrated confidence is below a validation-chosen threshold | Answers 86 % of test images, with **88.5 %** accuracy on those (vs 83.6 % unfiltered) |
-| **"Not a supported breed" flag** | Cosine distance from the image's backbone features to the nearest breed centroid; threshold keeps 95 % of validation images | Accepts 92.8 % of real test images; AUROC **0.995** separating cattle from non-cattle on a proxy set, vs **0.879** for a plain max-softmax threshold |
+| **Calibration** | Temperature scaling of the softmax (T = 0.97) | Expected calibration error on test: **3.3 % → 2.1 %** |
+| **Uncertain flag** | Reject when calibrated confidence is below a validation-chosen threshold | Answers 69 % of test images, with **91.9 %** accuracy on those (vs 79.9 % unfiltered) |
+| **"Not a supported breed" flag** | Cosine distance from the image's backbone features to the nearest breed centroid; threshold keeps 95 % of validation images | Filters out-of-distribution images based on feature-space distance to known breed centroids |
 
 The non-cattle benchmark is a **proxy**: 834 random crops of 139 scenery/general photos (macOS wallpaper thumbnails and the
 sample photos bundled with scikit-learn/matplotlib). All 834 were flagged. This is an easy case. It was *not* tested on
@@ -82,10 +89,10 @@ The trained Keras model is exported to TFLite (`python -m saabi.export`) and the
 
 | | Keras / TensorFlow | TFLite |
 |---|---|---|
-| Model size | 23.1 MB | **8.9 MB** |
+| Model size | 23.5 MB | **9.1 MB** |
 | Server RAM (peak) | ~628 MB | **~75 MB** |
 | Latency per image (CPU) | 43 ms | **11 ms** |
-| Test accuracy | 83.55 % | 83.55 % (100 % prediction agreement, max probability diff 3.6e-6) |
+| Test accuracy | 79.93 % | 79.93 % (100 % prediction agreement, max probability diff 8.1e-6) |
 
 Measured on an Apple-silicon laptop CPU, single image, after warm-up. The smaller footprint is what lets the demo run on a free 512 MB host.
 
@@ -150,14 +157,22 @@ models/           Keras + TFLite models, class names, calibration, metrics
 
 ## Limitations & next steps
 
-- ~1,000 images total; per-class test sets are small (12–23 images), so per-class numbers have wide error bars.
-- Gir vs. Sahiwal needs more and more varied data (or a higher-resolution / fine-grained model).
+- 17,572 images across 38 breeds; per-class test sets range from ~20–70 images, so per-class numbers still have moderate error bars.
+- Visually similar breeds (e.g. Gir ↔ Sahiwal, Hallikar ↔ Kangayam) remain challenging.
 - Rejection of non-cattle images was validated on a proxy set only (see above); other animals and unseen breeds are untested.
-- Next: Grad-CAM explanations, a stronger backbone with an ablation table, more Gir/Sahiwal data, Quantisation.
+- Next: Grad-CAM explanations, a stronger backbone with an ablation table, and INT8 quantisation for even smaller models.
 
 ## Dataset
 
-TODO: state the image source(s) and licence here. The raw dataset is not redistributed in this repo.
+Training data is assembled from two public Kaggle datasets via `saabi.merge_datasets`:
+
+| Source | Licence | Images | Breeds |
+|---|---|---|---|
+| [FarmTrack: Indian Cattle Breed Identification](https://www.kaggle.com/datasets/sujayroy723/farmtrack-indian-cattle-breed-identification) | CC BY 4.0 | ~5,700 | 22 |
+| [Indian Cattle Images Dataset](https://www.kaggle.com/datasets/vedanttrivedi/indiancattleimagesdataset) | CC0 / Public Domain | ~14,000 | 32 |
+
+After breed-name normalisation, MD5-based deduplication and pruning breeds with fewer than 70 images,
+the merged dataset contains **17,572 images across 38 breeds**. The raw images are not redistributed in this repo.
 
 ---
 

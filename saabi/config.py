@@ -19,3 +19,8 @@ TARGET_SELECTIVE_ACCURACY = 0.92  # accuracy we want on the predictions we choos
 OOD_PATH = MODEL_DIR / "ood_centroids.npy"
 OOD_ACCEPT_FRACTION = 0.95  # keep 95% of in-distribution validation images
 TFLITE_PATH = MODEL_DIR / "saabi.tflite"
+
+# Model version for API and reproducibility
+MODEL_VERSION = "2.0.0"
+LABEL_SMOOTHING = 0.1
+MIXUP_ALPHA = 0.2

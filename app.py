@@ -4,7 +4,9 @@
 """
 import io
 import json
+import logging
 import os
+import time
 
 from flask import Flask, jsonify, render_template, request
 from PIL import Image, UnidentifiedImageError
@@ -13,6 +15,7 @@ from saabi import config
 from saabi.breeds import BREED_INFO
 
 MAX_UPLOAD_MB = 10
+logger = logging.getLogger("saabi")
 
 
 def create_app(classifier=None) -> Flask:
@@ -28,6 +31,8 @@ def create_app(classifier=None) -> Flask:
         m = json.loads(config.METRICS_PATH.read_text())
         metrics = {"accuracy": m["accuracy"], "top3": m["top3_accuracy"], "test_images": m["test_images"]}
 
+    feedback_log = config.ROOT / "feedback.jsonl"
+
     @app.get("/")
     def home():
         breeds = [{"name": b, "label": b.replace("_", " "), **BREED_INFO.get(b, {})}
@@ -38,6 +43,19 @@ def create_app(classifier=None) -> Flask:
     @app.get("/api/health")
     def health():
         return jsonify(status="ok", classes=classifier.class_names)
+
+    @app.get("/api/version")
+    def version():
+        return jsonify(
+            version=config.MODEL_VERSION,
+            num_classes=len(classifier.class_names),
+            classes=classifier.class_names,
+            calibration={
+                "temperature": classifier.temperature,
+                "threshold": classifier.threshold,
+                "ood_threshold": classifier.ood_threshold,
+            },
+        )
 
     @app.post("/api/predict")
     def predict():
@@ -52,9 +70,35 @@ def create_app(classifier=None) -> Flask:
         except (UnidentifiedImageError, OSError):
             return jsonify(error="Could not read that file as an image."), 400
 
+        t0 = time.perf_counter()
         result = classifier.predict(img, top_k=3)
+        latency_ms = (time.perf_counter() - t0) * 1000
         best = result["predictions"][0]["breed"]
-        return jsonify(**result, info=BREED_INFO.get(best))
+        return jsonify(**result, info=BREED_INFO.get(best),
+                       latency_ms=round(latency_ms, 1))
+
+    @app.post("/api/feedback")
+    def feedback():
+        """Log user corrections for future retraining.
+
+        Body JSON: {"predicted": "Gir", "correct": "Sahiwal"} or
+                   {"predicted": "Gir", "correct": "wrong"} (for bad predictions).
+        """
+        body = request.get_json(silent=True)
+        if not body or "predicted" not in body:
+            return jsonify(error="Send JSON with 'predicted' and 'correct' fields."), 400
+        entry = {
+            "ts": time.time(),
+            "predicted": body.get("predicted"),
+            "correct": body.get("correct"),
+            "status": body.get("status"),
+        }
+        try:
+            with open(feedback_log, "a") as f:
+                f.write(json.dumps(entry) + "\n")
+        except OSError:
+            logger.warning("Could not write feedback log")
+        return jsonify(status="thanks")
 
     @app.errorhandler(413)
     def too_large(_):

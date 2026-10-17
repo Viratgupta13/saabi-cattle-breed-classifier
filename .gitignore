@@ -6,3 +6,7 @@ __pycache__/
 data/
 legacy/
 test_images/
+# user feedback (contains usage data)
+feedback.jsonl
+models/checkpoint_best.keras
+models/phase1_checkpoint.keras

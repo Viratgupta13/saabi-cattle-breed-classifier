@@ -11,14 +11,18 @@ def build_model(num_classes: int, dropout: float = 0.3) -> tf.keras.Model:
 
     Augmentation (training only) and ImageNet scaling live inside the graph, so
     training, evaluation and serving share one preprocessing path.
+
+    Augmentation is deliberately aggressive for 15+ classes to reduce overfitting
+    on small per-class counts.
     """
     size = config.IMG_SIZE
     inputs = layers.Input((size, size, 3), name="rgb_image")
     x = layers.RandomFlip("horizontal")(inputs)
-    x = layers.RandomRotation(0.06)(x)
-    x = layers.RandomZoom(0.15)(x)
-    x = layers.RandomTranslation(0.08, 0.08)(x)
-    x = layers.RandomContrast(0.15)(x)
+    x = layers.RandomRotation(0.08)(x)
+    x = layers.RandomZoom((-0.15, 0.15))(x)
+    x = layers.RandomTranslation(0.1, 0.1)(x)
+    x = layers.RandomContrast(0.2)(x)
+    x = layers.RandomBrightness(0.15)(x)
     x = layers.Rescaling(1 / 127.5, offset=-1, name="imagenet_scaling")(x)
 
     base = tf.keras.applications.MobileNetV2(

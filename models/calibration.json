@@ -1,14 +1,14 @@
 {
-  "temperature": 1.0762136873352766,
-  "threshold": 0.6347335577011108,
-  "ood_threshold": 0.6873247802257538,
+  "temperature": 0.9658049349736799,
+  "threshold": 0.694866955280304,
+  "ood_threshold": 0.538531094789505,
   "test": {
-    "in_distribution_accepted": 0.9276315789473685,
-    "ece_before": 0.05202424859530046,
-    "ece_after": 0.039168108842874805,
-    "nll_before": 0.4863416850566864,
-    "nll_after": 0.4799852967262268,
-    "coverage": 0.8618421052631579,
-    "accuracy_on_accepted": 0.8854961832061069
+    "in_distribution_accepted": 0.9487860394537178,
+    "ece_before": 0.03295395333936074,
+    "ece_after": 0.0212493417996557,
+    "nll_before": 0.7480022311210632,
+    "nll_after": 0.7475977540016174,
+    "coverage": 0.6930955993930197,
+    "accuracy_on_accepted": 0.9195402298850575
   }
 }

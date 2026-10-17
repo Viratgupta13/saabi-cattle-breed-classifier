@@ -8,6 +8,9 @@ from app import create_app
 
 class StubClassifier:
     class_names = ["Gir", "Murrah"]
+    temperature = 1.0
+    threshold = 0.5
+    ood_threshold = 0.7
 
     def predict(self, img, top_k=3):
         assert img.mode in ("RGB", "RGBA", "L", "P")
@@ -66,6 +69,35 @@ def test_predict_rejects_wrong_extension(client):
 
 def test_predict_rejects_corrupt_image(client):
     r = client.post("/api/predict", data={"image": (io.BytesIO(b"not an image"), "a.jpg")})
+    assert r.status_code == 400
+
+
+def test_version_endpoint(client):
+    r = client.get("/api/version")
+    body = r.get_json()
+    assert r.status_code == 200
+    assert "version" in body
+    assert body["num_classes"] == 2
+    assert body["classes"] == ["Gir", "Murrah"]
+
+
+def test_predict_returns_latency(client):
+    r = client.post("/api/predict", data={"image": (_png(), "cow.png")})
+    body = r.get_json()
+    assert "latency_ms" in body
+    assert isinstance(body["latency_ms"], float)
+
+
+def test_feedback_endpoint(client, tmp_path, monkeypatch):
+    import saabi.config as cfg
+    monkeypatch.setattr(cfg, "ROOT", tmp_path)
+    r = client.post("/api/feedback", json={"predicted": "Gir", "correct": "Sahiwal"})
+    assert r.status_code == 200
+    assert r.get_json()["status"] == "thanks"
+
+
+def test_feedback_rejects_bad_body(client):
+    r = client.post("/api/feedback", json={})
     assert r.status_code == 400
 
 

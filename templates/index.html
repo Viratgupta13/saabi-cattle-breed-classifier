@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SAABI · Cattle &amp; Buffalo Breed Identifier</title>
-<meta name="description" content="Upload a photo and identify one of 8 Indian and exotic cattle and buffalo breeds with a MobileNetV2 deep-learning model.">
+<meta name="description" content="Upload a photo and identify Indian and exotic cattle and buffalo breeds with a MobileNetV2 deep-learning model. 38 breeds supported.">
 <style>
   :root {
     --bg:#f7f4ec; --surface:#fffdf8; --ink:#1d2a22; --muted:#66736b; --line:#e4dfd0;
@@ -99,7 +99,7 @@
   .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3)}
   .step .n{font:700 14px ui-serif,Georgia,serif;color:var(--clay);letter-spacing:.1em}
   .step h3{font-size:22px;margin:var(--s1) 0}.step p{margin:0;color:var(--muted);font-size:15px}
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--s2)}
   .breed{display:flex;flex-direction:column;gap:var(--s1);padding:var(--s3)}
   .breed h3{font-size:20px} .breed p{font-size:14px;color:var(--muted);margin:0}
   .breed .tags{margin:var(--s1) 0}
@@ -177,7 +177,7 @@
 
 <section id="breeds" class="wrap">
   <div class="head"><h2>Supported breeds</h2>
-    <p>Four dairy cattle breeds, three draught breeds, and one dairy buffalo.</p></div>
+    <p>{{ breeds|length }} breeds across Indian indigenous cattle, exotic dairy cattle, and river buffalo.</p></div>
   <div class="grid">
     {% for b in breeds %}
     <div class="card breed">
@@ -195,9 +195,9 @@
     <p>A good model is one that tells you where it struggles.</p></div>
   <div class="limits">
     <div class="card"><h3>Where it struggles</h3><ul>
-      <li>Gir and Sahiwal look alike and are the most commonly confused pair.</li>
-      <li>Trained on roughly 1,000 images, so unusual angles or crossbreeds can fool it.</li>
-      <li>Only the 8 listed breeds are known; others will be mapped to the nearest one or flagged.</li>
+      <li>Visually similar breeds (Gir/Sahiwal, Murrah/Nili-Ravi) are the most commonly confused pairs.</li>
+      <li>Trained on ~5,600 images with label smoothing and mixup augmentation to reduce overfitting.</li>
+      <li>Only the {{ breeds|length }} listed breeds are known; others will be flagged as unsupported.</li>
     </ul></div>
     <div class="card"><h3>How it’s evaluated</h3><ul>
       <li>Duplicate images removed before a stratified train / validation / test split.</li>
